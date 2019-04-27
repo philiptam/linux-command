@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import {Input, Select, Button} from 'antd';
+import ConmmandTable from './../table'
 
 const Option = Select.Option;
 export default class DeployDamWar extends Component {
@@ -8,22 +9,35 @@ export default class DeployDamWar extends Component {
     super(props);
     this.handldClick = this.handldClick.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
-    this.handleSelectChange=this.handleSelectChange.bind(this);
+    this.handleSelectChange = this.handleSelectChange.bind(this);
     this.state = {
       packageName: '',
-      tipText: ''
+      tipText: '',
+      serverValue: ""
     };
   }
-  handleSelectChange(e){
-    console.log(e);
+
+  handleSelectChange(e) {
+    this.setState({
+      serverValue: e,
+      tipText: ""
+    })
   }
+
   handldClick() {
-    if(this.state.packageName===''){
+    if (this.state.packageName === '') {
       this.setState({
         tipText: "请输入包名"
       });
       return false;
     }
+    if (this.state.serverValue === '') {
+      this.setState({
+        tipText: "请选择服务器"
+      });
+      return false;
+    }
+
   }
 
   handleOnChange(e) {
@@ -44,7 +58,7 @@ export default class DeployDamWar extends Component {
                    value={this.state.packageName}
                    onChange={this.handleOnChange}
                    style={{width: 500}}
-                   placeholder="请输入包名："/>
+                   placeholder="请输入包名"/>
           </div>
           <div style={{marginTop: "20px"}}>
             <label>请选择服务器：</label>
@@ -61,7 +75,7 @@ export default class DeployDamWar extends Component {
           <ButtonContent>
             <Button onClick={this.handldClick} type="primary">生成命令</Button>
           </ButtonContent>
-
+          <ConmmandTable></ConmmandTable>
         </DamContent>
       </div>
     )
