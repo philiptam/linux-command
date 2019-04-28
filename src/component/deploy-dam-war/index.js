@@ -1,7 +1,9 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 import {Input, Select, Button} from 'antd';
-import ConmmandTable from './../table'
+import ConmmandTable from './../table';
+import {serverPath, serverDam, tmpPath, damWarName} from './serverdata'
+
 
 const Option = Select.Option;
 export default class DeployDamWar extends Component {
@@ -10,10 +12,12 @@ export default class DeployDamWar extends Component {
     this.handldClick = this.handldClick.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleSelectChange = this.handleSelectChange.bind(this);
+    this.handldReset = this.handldReset.bind(this);
     this.state = {
       packageName: '',
       tipText: '',
-      serverValue: ""
+      serverValue: "",
+      tableList: []
     };
   }
 
@@ -37,7 +41,28 @@ export default class DeployDamWar extends Component {
       });
       return false;
     }
-
+    const cpCommand = `cp ${tmpPath}/${this.state.packageName} ${serverPath}/${this.state.serverValue}/apps`;//生成CD命令
+    const rmCommand = `rm -rf ${serverPath}/${this.state.serverValue}/apps/${damWarName}`;//生成删除快捷方式命令
+    const lnCommand = `ln -s ${serverPath}/${this.state.serverValue}/apps/${this.state.packageName} ${serverPath}/${this.state.serverValue}/apps/${damWarName}`;//创建快捷方式
+    const tableList = [{
+      key: '1',
+      step: '1',
+      command: cpCommand,
+      describe: '复制war包到指定目录',
+    }, {
+      key: '2',
+      step: '2',
+      command: rmCommand,
+      describe: '删除原来的快捷方式',
+    }, {
+      key: '3',
+      step: '3',
+      command: lnCommand,
+      describe: '生成新的快捷方式',
+    }];
+    this.setState({
+      tableList
+    })
   }
 
   handleOnChange(e) {
@@ -45,6 +70,14 @@ export default class DeployDamWar extends Component {
     this.setState({
       packageName: e.target.value,
       tipText: ""
+    });
+  }
+
+  handldReset() {
+    this.setState({
+      packageName: '',
+      tipText: '',
+      serverValue: "",
     });
   }
 
@@ -67,16 +100,22 @@ export default class DeployDamWar extends Component {
               style={{width: 500}}
               placeholder="请选择服务器"
               onChange={this.handleSelectChange}>
-              <Option value="1">123</Option>
-              <Option value="2">123</Option>
+              value={this.state.serverValue}
+              {
+                serverDam.map((item, index) => {
+                  return <Option key={item.serverFolder}>{item.serverName}</Option>
+                })
+              }
             </Select>
           </div>
           <Tip>{this.state.tipText}</Tip>
           <ButtonContent>
             <Button onClick={this.handldClick} type="primary">生成命令</Button>
+            <Button style={{marginLeft: "20px"}} onClick={this.handldReset} type="danger">重置</Button>
           </ButtonContent>
-          <ConmmandTable></ConmmandTable>
+
         </DamContent>
+        <ConmmandTable dataSource={this.state.tableList}></ConmmandTable>
       </div>
     )
   }
