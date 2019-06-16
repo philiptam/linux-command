@@ -100,7 +100,6 @@ export default class DeployDamWar extends Component {
               style={{width: 500}}
               placeholder="请选择服务器"
               onChange={this.handleSelectChange}>
-              value={this.state.serverValue}
               {
                 serverDam.map((item, index) => {
                   return <Option key={item.serverFolder}>{item.serverName}</Option>
